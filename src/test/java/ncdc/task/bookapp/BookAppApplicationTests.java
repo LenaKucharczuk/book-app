@@ -28,7 +28,7 @@ class BookAppApplicationTests {
         )
                 .andExpect(view().name("add-book"))
                 .andExpect(model().errorCount(1))
-                .andExpect(model().attributeHasFieldErrorCode("book", "author", "Pattern"));
+                .andExpect(model().attributeHasFieldErrorCode("book", "author", "AnyWordStartsWithLetterA"));
     }
 
     @Test
