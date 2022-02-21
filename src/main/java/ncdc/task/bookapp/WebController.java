@@ -15,21 +15,21 @@ public class WebController {
 
     @GetMapping(HOME_MAPPING)
     public String showBookListPage(Model model) {
-        List<Book> books = List.of(
-                new Book("Płatki na wietrze", "Lenix", "ISBN")
+        List<BookDTO> books = List.of(
+                new BookDTO("Płatki na wietrze", "Lenix", "ISBN")
         );
         model.addAttribute("books", books);
         return "book-list";
     }
 
     @GetMapping("/add")
-    public String showAddBookPage(Book book) {
+    public String showAddBookPage(BookDTO book) {
 
         return "add-book";
     }
 
     @PostMapping("/add")
-    public String addBook(@Valid Book book, BindingResult result, Model model) {
+    public String addBook(@Valid BookDTO book, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "add-book";
         }

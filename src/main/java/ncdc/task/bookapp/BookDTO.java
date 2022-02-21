@@ -2,7 +2,7 @@ package ncdc.task.bookapp;
 
 import javax.validation.constraints.NotBlank;
 
-public record Book(
+public record BookDTO(
         @NotBlank
         String title,
         @NotBlank
@@ -11,9 +11,4 @@ public record Book(
         @NotBlank
         String isbn
 ) {
-    public Book(String title, String author, String isbn) {
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-    }
 }
