@@ -1,4 +1,4 @@
-package ncdc.task.bookapp;
+package ncdc.task.bookapp.api;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,31 +14,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = WebController.class)
-class BookAppApplicationTests {
+class WebControllerTests {
 
     @Autowired
     private MockMvc mvc;
 
     @Test
     void whenError() throws Exception {
-        mvc.perform(post("/add")
-                .param("title", "Title")
-                .param("author", "Lenix Benix")
-                .param("isbn", "ISBN")
-        )
-                .andExpect(view().name("add-book"))
-                .andExpect(model().errorCount(1))
-                .andExpect(model().attributeHasFieldErrorCode("book", "author", "AnyWordStartsWithLetterA"));
+        mvc
+            .perform(
+                post("/add")
+                    .param("title", "Title")
+                    .param("author", "Lenix Benix")
+                    .param("isbn", "ISBN")
+            )
+            .andExpect(view().name("add-book"))
+            .andExpect(model().errorCount(1))
+            .andExpect(model().attributeHasFieldErrorCode("book", "author", "AnyWordStartsWithLetterA"));
     }
 
     @Test
     void whenSuccess() throws Exception {
-        mvc.perform(post("/add")
-                .param("title", "Title")
-                .param("author", "Lenix Anix")
-                .param("isbn", "ISBN")
-        )
-                .andExpect(model().hasNoErrors())
-                .andExpect(redirectedUrl("/"));
+        mvc
+            .perform(
+                post("/add")
+                    .param("title", "Title")
+                    .param("author", "Lenix Anix")
+                    .param("isbn", "ISBN")
+            )
+            .andExpect(model().hasNoErrors())
+            .andExpect(redirectedUrl("/"));
     }
 }

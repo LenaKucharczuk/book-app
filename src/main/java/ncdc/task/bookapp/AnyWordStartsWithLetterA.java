@@ -32,9 +32,9 @@ class AnyWordStartsWithLetterAValidator implements ConstraintValidator<AnyWordSt
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         VerbalExpression regex = VerbalExpression.regex()
-                .then("A")
-                .word()
-                .build();
+            .then("A")
+            .word()
+            .build();
         return regex.test(value);
     }
 }

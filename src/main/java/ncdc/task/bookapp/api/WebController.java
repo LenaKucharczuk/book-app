@@ -1,5 +1,6 @@
-package ncdc.task.bookapp;
+package ncdc.task.bookapp.api;
 
+import ncdc.task.bookapp.domain.BookService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,27 +10,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.validation.Valid;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Controller
 public class WebController {
     private final String HOME_MAPPING = "/";
 
+    private final BookService bookService;
+
+    public WebController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     @GetMapping(HOME_MAPPING)
     public String showBookListPage(Model model) {
-        List<BookDTO> books = List.of(
-                new BookDTO("Płatki na wietrze", "Lenix", "ISBN")
-        );
+        List<BookDto> books = bookService.getAllBooks().stream().map(BookDto::fromDomain).collect(toList());
         model.addAttribute("books", books);
         return "book-list";
     }
 
     @GetMapping("/add")
-    public String showAddBookPage(BookDTO book) {
-
+    public String showAddBookPage(BookDto book) {
         return "add-book";
     }
 
     @PostMapping("/add")
-    public String addBook(@Valid BookDTO book, BindingResult result, Model model) {
+    public String addBook(@Valid BookDto book, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "add-book";
         }
