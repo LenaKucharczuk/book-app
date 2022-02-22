@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -22,7 +21,7 @@ public class BooksController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> addBook(@RequestBody @Valid BookDto book) {
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto book) {
         Book createdBook = bookService.createBook(book.toDomain());
         return ResponseEntity.ok(BookDto.fromDomain(createdBook));
     }

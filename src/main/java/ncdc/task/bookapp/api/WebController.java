@@ -8,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -36,7 +35,7 @@ public class WebController {
     }
 
     @PostMapping("/add")
-    public String addBook(@Valid BookDto book, BindingResult result, Model model) {
+    public String addBook(BookDto book, BindingResult result, Model model) {
         try {
             bookService.createBook(book.toDomain());
         } catch (ValidationException e) {
