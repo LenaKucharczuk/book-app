@@ -41,7 +41,7 @@ public class WebController {
             bookService.createBook(book.toDomain());
         } catch (ValidationException e) {
             e.validationErrors.forEach(it ->
-                result.rejectValue(it.fieldName(), it.errorCode(), it.errorMessage())
+                result.rejectValue(it.fieldName(), it.errorCode(), it.errorCode())
             );
             return "add-book";
         }

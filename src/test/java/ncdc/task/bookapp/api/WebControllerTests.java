@@ -35,7 +35,7 @@ class WebControllerTests {
             )
             .andExpect(view().name("add-book"))
             .andExpect(model().errorCount(1))
-            .andExpect(model().attributeHasFieldErrorCode("bookDto", "author", "AnyWordStartsWithLetterA"));
+            .andExpect(model().attributeHasFieldErrorCode("bookDto", "author", "Either forename or surname must start with letter 'A'"));
     }
 
     @Test
