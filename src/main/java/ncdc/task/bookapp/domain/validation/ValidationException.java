@@ -1,4 +1,4 @@
-package ncdc.task.bookapp.domain;
+package ncdc.task.bookapp.domain.validation;
 
 import java.util.List;
 

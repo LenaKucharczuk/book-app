@@ -1,6 +1,5 @@
 package ncdc.task.bookapp.api;
 
-import ncdc.task.bookapp.domain.Book;
 import ncdc.task.bookapp.domain.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @RestController("books")
 public class BooksController {
@@ -22,18 +19,12 @@ public class BooksController {
 
     @PostMapping
     public ResponseEntity<BookDto> addBook(@RequestBody BookDto book) {
-        Book createdBook = bookService.createBook(book.toDomain());
-        return ResponseEntity.ok(BookDto.fromDomain(createdBook));
+        bookService.createBook(book);
+        return ResponseEntity.ok(book);
     }
 
     @GetMapping
     public ResponseEntity<List<BookDto>> getAllBooks() {
-        return ResponseEntity.ok(
-            bookService.getAllBooks()
-                .stream()
-                .map(BookDto::fromDomain)
-                .collect(toList())
-        );
-
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 }
