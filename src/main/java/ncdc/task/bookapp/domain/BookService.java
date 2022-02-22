@@ -8,7 +8,7 @@ import java.util.List;
 public class BookService {
     public List<Book> getAllBooks() {
         return List.of(
-            new Book("Płatki na wietrze", "Lenix", "ISBN")
+            new Book("Płatki na wietrze", "Lenix Anix", "ISBN")
         );
     }
 

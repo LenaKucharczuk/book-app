@@ -1,6 +1,7 @@
 package ncdc.task.bookapp.api;
 
 import ncdc.task.bookapp.domain.BookService;
+import ncdc.task.bookapp.domain.ValidationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,7 +37,12 @@ public class WebController {
 
     @PostMapping("/add")
     public String addBook(@Valid BookDto book, BindingResult result, Model model) {
-        if (result.hasErrors()) {
+        try {
+            bookService.createBook(book.toDomain());
+        } catch (ValidationException e) {
+            e.validationErrors.forEach(it ->
+                result.rejectValue(it.fieldName(), it.errorCode(), it.errorMessage())
+            );
             return "add-book";
         }
         return "redirect:" + HOME_MAPPING;
