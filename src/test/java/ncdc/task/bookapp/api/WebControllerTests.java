@@ -1,9 +1,11 @@
 package ncdc.task.bookapp.api;
 
+import ncdc.task.bookapp.domain.BookService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,6 +21,9 @@ class WebControllerTests {
     @Autowired
     private MockMvc mvc;
 
+    @MockBean
+    private BookService bookService;
+
     @Test
     void whenError() throws Exception {
         mvc
@@ -30,7 +35,7 @@ class WebControllerTests {
             )
             .andExpect(view().name("add-book"))
             .andExpect(model().errorCount(1))
-            .andExpect(model().attributeHasFieldErrorCode("book", "author", "AnyWordStartsWithLetterA"));
+            .andExpect(model().attributeHasFieldErrorCode("bookDto", "author", "AnyWordStartsWithLetterA"));
     }
 
     @Test
