@@ -1,5 +1,6 @@
 package ncdc.task.bookapp.api;
 
+import ncdc.task.bookapp.domain.BookDto;
 import ncdc.task.bookapp.domain.BookService;
 import ncdc.task.bookapp.domain.validation.FieldValidationError;
 import ncdc.task.bookapp.domain.validation.ValidationException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/books")
@@ -34,7 +36,7 @@ public class BookController {
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<List<FieldValidationError>> handleValidationException(ValidationException e) {
+    public ResponseEntity<Set<FieldValidationError>> handleValidationException(ValidationException e) {
         return ResponseEntity.badRequest().body(e.validationErrors);
     }
 }

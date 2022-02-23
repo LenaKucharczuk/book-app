@@ -1,6 +1,4 @@
-package ncdc.task.bookapp.api;
-
-import ncdc.task.bookapp.domain.Book;
+package ncdc.task.bookapp.domain;
 
 public record BookDto(
     String title,

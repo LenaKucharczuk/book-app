@@ -11,21 +11,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static java.net.http.HttpRequest.BodyPublishers.ofString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = "server_port=8080")
 class BookControllerIntegrationTest {
 
     @Value("${server_port}")
-    int port;
+    private int port;
 
     private final HttpClient httpClient = HttpClient.newBuilder().build();
 
     @Test
-    void whenSuccess() throws Exception {
-        HttpResponse<String> response = httpClient
+    void whenAddingValidBook_thenItIsSuccessfullySaved() throws Exception {
+        HttpResponse<String> creationResponse = httpClient
             .send(
                 HttpRequest.newBuilder()
-                    .header("Content-Type", "application/json")
+                    .header(CONTENT_TYPE, "application/json")
                     .uri(new URI("http://localhost:" + port + "/books"))
                     .POST(
                         ofString(
@@ -34,22 +36,32 @@ class BookControllerIntegrationTest {
                                     "title": "Title",
                                     "author": "Lenix Aix",
                                     "isbn": "ISBN"
-                                }
-                                """
+                                }"""
                         )
                     )
                     .build(), HttpResponse.BodyHandlers.ofString()
             );
+        assertEquals(creationResponse.statusCode(), HttpStatus.OK.value());
 
-        assert response.statusCode() == HttpStatus.OK.value();
+        HttpResponse<String> getAllResponse = httpClient
+            .send(
+                HttpRequest.newBuilder()
+                    .uri(new URI("http://localhost:" + port + "/books"))
+                    .GET()
+                    .build(), HttpResponse.BodyHandlers.ofString()
+            );
+        assertEquals(getAllResponse.statusCode(), HttpStatus.OK.value());
+        assertEquals(getAllResponse.body(), """
+            [{"title":"Title","author":"Lenix Aix","isbn":"ISBN"}]"""
+        );
     }
 
     @Test
-    void whenError() throws Exception {
+    void whenTryingToAddInvalidBook_thenReturnValidationErrors() throws Exception {
         HttpResponse<String> response = httpClient
             .send(
                 HttpRequest.newBuilder()
-                    .header("Content-Type", "application/json")
+                    .header(CONTENT_TYPE, "application/json")
                     .uri(new URI("http://localhost:" + port + "/books"))
                     .POST(
                         ofString(
@@ -58,13 +70,21 @@ class BookControllerIntegrationTest {
                                     "title": "Title",
                                     "author": "Lenix",
                                     "isbn": "ISBN"
-                                }
-                                """
+                                }"""
                         )
                     )
                     .build(), HttpResponse.BodyHandlers.ofString()
             );
+        assertEquals(response.statusCode(), HttpStatus.BAD_REQUEST.value());
 
-        assert response.statusCode() == HttpStatus.BAD_REQUEST.value();
+        HttpResponse<String> getAllResponse = httpClient
+            .send(
+                HttpRequest.newBuilder()
+                    .uri(new URI("http://localhost:" + port + "/books"))
+                    .GET()
+                    .build(), HttpResponse.BodyHandlers.ofString()
+            );
+        assertEquals(getAllResponse.statusCode(), HttpStatus.OK.value());
+        assertEquals(getAllResponse.body(), "[]");
     }
 }

@@ -1,52 +1,64 @@
 package ncdc.task.bookapp.api;
 
+import ncdc.task.bookapp.domain.BookDto;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Map;
+import java.util.List;
 
-import static java.net.http.HttpRequest.BodyPublishers.ofString;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.stream.Collectors.joining;
+import static java.util.Collections.emptyList;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = "server_port=8080")
+@SpringBootTest
+@AutoConfigureMockMvc
 class WebControllerIntegrationTests {
 
-    private final HttpClient httpClient = HttpClient.newBuilder().build();
+    @Autowired
+    private MockMvc mvc;
 
     @Test
-    void whenError() throws Exception {
-        HttpResponse<String> response = httpClient
-            .send(
-                HttpRequest.newBuilder()
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .uri(new URI("http://localhost:8080/add"))
-                    .POST(
-                        getEncodedParams(
-                            Map.of(
-                                "title", "Title",
-                                "author", "Lenix Benix",
-                                "isbn", "ISBN"
-                            )
-                        )
-                    )
-                    .build(), HttpResponse.BodyHandlers.ofString()
-            );
+    void whenTryingToAddInvalidBook_thenReturnValidationErrors() throws Exception {
+        mvc
+            .perform(
+                post("/add")
+                    .param("title", "")
+                    .param("author", "Lenix Benix")
+                    .param("isbn", "ISBN")
+            )
+            .andExpect(view().name("add-book"))
+            .andExpect(model().errorCount(2))
+            .andExpect(model().attributeHasFieldErrors("bookDto", "author", "title"));
 
-        response.body();
+        mvc
+            .perform(get("/"))
+            .andExpect(
+                model().attribute("books", emptyList())
+            );
     }
 
+    @Test
+    void whenAddingValidBook_thenItIsSuccessfullySaved() throws Exception {
+        mvc
+            .perform(
+                post("/add")
+                    .param("title", "Title")
+                    .param("author", "Lenix Anix")
+                    .param("isbn", "ISBN")
+            )
+            .andExpect(model().hasNoErrors())
+            .andExpect(redirectedUrl("/"));
 
-    private HttpRequest.BodyPublisher getEncodedParams(Map<String, String> params) {
-        return ofString(
-            params.keySet().stream()
-                .map(key -> key + "=" + URLEncoder.encode(params.get(key), UTF_8))
-                .collect(joining("&", "", ""))
-        );
+        mvc
+            .perform(get("/"))
+            .andExpect(
+                model().attribute("books", List.of(new BookDto("Title", "Lenix Anix", "ISBN")))
+            );
     }
 }

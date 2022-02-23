@@ -1,11 +1,11 @@
 package ncdc.task.bookapp.domain.validation;
 
-import java.util.List;
+import java.util.Set;
 
 public class ValidationException extends IllegalArgumentException {
-    public List<FieldValidationError> validationErrors;
+    public Set<FieldValidationError> validationErrors;
 
-    public ValidationException(List<FieldValidationError> validationErrors) {
+    public ValidationException(Set<FieldValidationError> validationErrors) {
         this.validationErrors = validationErrors;
     }
 }
