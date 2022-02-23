@@ -17,7 +17,7 @@ public record Book(
             isNotEmpty("author", author),
             isNotEmpty("isbn", isbn),
             satisfies("author", "Either forename or surname must start with letter 'A'",
-                VerbalExpression.regex().then("A").word().build().test(author)
+                VerbalExpression.regex().wordBoundary().then("A").word().wordBoundary().build().test(author)
             )
         );
     }

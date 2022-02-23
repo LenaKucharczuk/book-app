@@ -3,28 +3,19 @@ package ncdc.task.bookapp.domain;
 import ncdc.task.bookapp.domain.validation.FieldValidationError;
 import ncdc.task.bookapp.domain.validation.ValidationException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BookTest {
-    @Test
-    public void whenValidBookIsCreated_thenNoExceptionIsThrown() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Anne Rice", "Rice Anne", "Joan Anne Rosewood", "Anne Joan Rosewood", "Joan Rosewood Anne"})
+    public void whenValidBookIsCreated_thenNoExceptionIsThrown(String author) {
         assertDoesNotThrow(() ->
-            new Book("Title", "Anne Rice", "Isbn")
-        );
-        assertDoesNotThrow(() ->
-            new Book("Title", "Rice Anne", "Isbn")
-        );
-        assertDoesNotThrow(() ->
-            new Book("Title", "Joan Anne Rosewood", "Isbn")
-        );
-        assertDoesNotThrow(() ->
-            new Book("Title", "Anne Joan Rosewood", "Isbn")
-        );
-        assertDoesNotThrow(() ->
-            new Book("Title", "Joan Rosewood Anne", "Isbn")
+            new Book("Title", author, "Isbn")
         );
     }
 
@@ -54,10 +45,11 @@ class BookTest {
         );
     }
 
-    @Test
-    public void whenAuthorsNameNorSurnameStartsWithLetterA_thenExceptionIsThrown() {
+    @ParameterizedTest
+    @ValueSource(strings = {"Lenix Benix", "LenAs Bena", "LenA Bena", "Lena A"})
+    public void whenAuthorsNameNorSurnameStartsWithLetterA_thenExceptionIsThrown(String author) {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
-            new Book("Title", "Lenix Benix", "Isbn");
+            new Book("Title", author, "Isbn");
         });
         assertThat(exception.validationErrors).containsExactly(
             new FieldValidationError("author", "Either forename or surname must start with letter 'A'")
