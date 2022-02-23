@@ -3,14 +3,17 @@ package ncdc.task.bookapp.infractructure;
 import ncdc.task.bookapp.domain.Book;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
 public final class PersistentBook {
+    @Id
+    @GeneratedValue
+    private long id;
     private String title;
     private String author;
-    @Id
     private String isbn;
 
     public PersistentBook(
