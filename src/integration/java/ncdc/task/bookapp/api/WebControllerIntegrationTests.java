@@ -37,7 +37,7 @@ class WebControllerIntegrationTests {
             .andExpect(model().attributeHasFieldErrors("bookDto", "author", "title"));
 
         mvc
-            .perform(get("/"))
+            .perform(get("/list"))
             .andExpect(
                 model().attribute("books", emptyList())
             );
@@ -53,10 +53,10 @@ class WebControllerIntegrationTests {
                     .param("isbn", "ISBN")
             )
             .andExpect(model().hasNoErrors())
-            .andExpect(redirectedUrl("/"));
+            .andExpect(redirectedUrl("/list"));
 
         mvc
-            .perform(get("/"))
+            .perform(get("/list"))
             .andExpect(
                 model().attribute("books", List.of(new BookDto("Title", "Lenix Anix", "ISBN")))
             );

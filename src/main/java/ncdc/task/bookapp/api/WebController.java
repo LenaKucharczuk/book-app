@@ -20,7 +20,7 @@ public class WebController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public String showBookListPage(Model model) {
         List<BookDto> books = bookService.getAllBooks();
         model.addAttribute("books", books);
@@ -33,7 +33,7 @@ public class WebController {
     }
 
     @PostMapping("/add")
-    public String addBook(BookDto book, BindingResult result, Model model) {
+    public String addBook(BookDto book, BindingResult result) {
         try {
             bookService.createBook(book);
         } catch (ValidationException e) {
@@ -42,6 +42,6 @@ public class WebController {
             );
             return "add-book";
         }
-        return "redirect:/";
+        return "redirect:/list";
     }
 }
