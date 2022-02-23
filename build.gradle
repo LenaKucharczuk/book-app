@@ -18,9 +18,40 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'ru.lanwen.verbalregex:java-verbal-expressions:1.8'
     runtimeOnly 'com.h2database:h2'
+    testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 }
 
 tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    integration {
+        java.srcDir "$projectDir/src/integration/java"
+        resources.srcDir "$projectDir/src/integration/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+configurations {
+    integrationImplementation.extendsFrom testImplementation
+    integrationRuntime.extendsFrom testRuntime
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integration.output.classesDirs
+    classpath = sourceSets.integration.runtimeClasspath
+}
+
+check.dependsOn integrationTest
+
+test {
+    useJUnitPlatform()
+}
+
+integrationTest {
     useJUnitPlatform()
 }
