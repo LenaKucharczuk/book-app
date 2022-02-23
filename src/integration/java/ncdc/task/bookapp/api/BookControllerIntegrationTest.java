@@ -1,90 +1,50 @@
 package ncdc.task.bookapp.api;
 
+import ncdc.task.bookapp.domain.BookDto;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.util.List;
 
-import static java.net.http.HttpRequest.BodyPublishers.ofString;
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpEntity.EMPTY;
+import static org.springframework.http.HttpMethod.GET;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = "server_port=8080")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerIntegrationTest {
 
-    @Value("${server_port}")
-    private int port;
-
-    private final HttpClient httpClient = HttpClient.newBuilder().build();
+    @Autowired
+    private TestRestTemplate httpClient;
 
     @Test
-    void whenAddingValidBook_thenItIsSuccessfullySaved() throws Exception {
-        HttpResponse<String> creationResponse = httpClient
-            .send(
-                HttpRequest.newBuilder()
-                    .header(CONTENT_TYPE, "application/json")
-                    .uri(new URI("http://localhost:" + port + "/books"))
-                    .POST(
-                        ofString(
-                            """
-                                {
-                                    "title": "Title",
-                                    "author": "Lenix Aix",
-                                    "isbn": "ISBN"
-                                }"""
-                        )
-                    )
-                    .build(), HttpResponse.BodyHandlers.ofString()
-            );
-        assertEquals(creationResponse.statusCode(), HttpStatus.OK.value());
+    void whenAddingValidBook_thenItIsSuccessfullySaved() {
+        ResponseEntity<String> creationResponse = httpClient
+            .postForEntity("/books", new BookDto("Title", "Lenix Aix", "ISBN"), String.class);
+        assertEquals(creationResponse.getStatusCode(), HttpStatus.OK);
 
-        HttpResponse<String> getAllResponse = httpClient
-            .send(
-                HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:" + port + "/books"))
-                    .GET()
-                    .build(), HttpResponse.BodyHandlers.ofString()
-            );
-        assertEquals(getAllResponse.statusCode(), HttpStatus.OK.value());
-        assertEquals(getAllResponse.body(), """
-            [{"title":"Title","author":"Lenix Aix","isbn":"ISBN"}]"""
-        );
+        ResponseEntity<List<BookDto>> getAllResponse = httpClient
+            .exchange("/books", GET, EMPTY, new ParameterizedTypeReference<>() {
+            });
+        assertEquals(getAllResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(getAllResponse.getBody(), List.of(new BookDto("Title", "Lenix Aix", "ISBN")));
     }
 
     @Test
-    void whenTryingToAddInvalidBook_thenReturnValidationErrors() throws Exception {
-        HttpResponse<String> response = httpClient
-            .send(
-                HttpRequest.newBuilder()
-                    .header(CONTENT_TYPE, "application/json")
-                    .uri(new URI("http://localhost:" + port + "/books"))
-                    .POST(
-                        ofString(
-                            """
-                                {
-                                    "title": "Title",
-                                    "author": "Lenix",
-                                    "isbn": "ISBN"
-                                }"""
-                        )
-                    )
-                    .build(), HttpResponse.BodyHandlers.ofString()
-            );
-        assertEquals(response.statusCode(), HttpStatus.BAD_REQUEST.value());
+    void whenTryingToAddInvalidBook_thenReturnValidationErrors() {
+        ResponseEntity<String> creationResponse = httpClient
+            .postForEntity("/books", new BookDto("Title", "Lenix", "ISBN"), String.class);
+        assertEquals(creationResponse.getStatusCode(), HttpStatus.BAD_REQUEST);
 
-        HttpResponse<String> getAllResponse = httpClient
-            .send(
-                HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:" + port + "/books"))
-                    .GET()
-                    .build(), HttpResponse.BodyHandlers.ofString()
-            );
-        assertEquals(getAllResponse.statusCode(), HttpStatus.OK.value());
-        assertEquals(getAllResponse.body(), "[]");
+        ResponseEntity<List<BookDto>> getAllResponse = httpClient
+            .exchange("/books", GET, EMPTY, new ParameterizedTypeReference<>() {
+            });
+        assertEquals(getAllResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(getAllResponse.getBody(), emptyList());
     }
 }
