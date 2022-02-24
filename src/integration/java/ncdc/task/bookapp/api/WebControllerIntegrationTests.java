@@ -26,6 +26,10 @@ class WebControllerIntegrationTests {
     @Test
     void whenTryingToAddInvalidBook_thenReturnValidationErrors() throws Exception {
         mvc
+            .perform(get("/add"))
+            .andExpect(view().name("add-book"));
+
+        mvc
             .perform(
                 post("/add")
                     .param("title", "")
@@ -45,6 +49,10 @@ class WebControllerIntegrationTests {
 
     @Test
     void whenAddingValidBook_thenItIsSuccessfullySaved() throws Exception {
+        mvc
+            .perform(get("/add"))
+            .andExpect(view().name("add-book"));
+
         mvc
             .perform(
                 post("/add")

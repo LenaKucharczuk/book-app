@@ -28,7 +28,7 @@ public class WebController {
     }
 
     @GetMapping("/add")
-    public String showAddBookPage() {
+    public String showAddBookPage(BookDto book) {
         return "add-book";
     }
 
