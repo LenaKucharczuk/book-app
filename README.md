@@ -9,6 +9,5 @@ Application which allows creating list of books (for example books to read).
    Application should have validation rule on author that forename or surname should start from letter 'A'. Application
    must display failure message, mark failed field and holds user on new records form when validation fails. On success
    application redirects user to list of added records.
-5. Additionally, it has rest service with two methods. One method adds a book to the storage and second method returns
+3. Additionally, it has rest service with two methods. One method adds a book to the storage and second method returns 
    all books’ stored in storage.
-   
