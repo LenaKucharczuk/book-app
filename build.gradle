@@ -6,7 +6,12 @@ plugins {
 
 group = 'ncdc.task'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 repositories {
     mavenCentral()
@@ -21,10 +26,6 @@ dependencies {
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }
 
 sourceSets {
