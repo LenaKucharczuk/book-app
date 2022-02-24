@@ -48,9 +48,8 @@ class BookTest {
     @ParameterizedTest
     @ValueSource(strings = {"Lenix Benix", "LenAs Bena", "LenA Bena", "Lena A"})
     public void whenAuthorsNameNorSurnameStartsWithLetterA_thenExceptionIsThrown(String author) {
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            new Book("Title", author, "Isbn");
-        });
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+            new Book("Title", author, "Isbn"));
         assertThat(exception.validationErrors).containsExactly(
             new FieldValidationError("author", "Either forename or surname must start with letter 'A'")
         );
